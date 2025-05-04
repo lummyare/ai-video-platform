@@ -39,11 +39,16 @@ class AIService:
 
             logger.info(f"Received output from Replicate: {output}")
 
-            # Return the video URL
+            # Handle different output types
             if isinstance(output, list) and output:
+                # Sometimes it's a list of URLs
                 return output[0]
             elif isinstance(output, str):
+                # Sometimes it's a single URL string
                 return output
+            elif hasattr(output, "url"):
+                # Sometimes it's a FileOutput object
+                return output.url
             else:
                 raise ValueError(f"Unexpected output format from Replicate: {type(output)}")
 
