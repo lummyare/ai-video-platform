@@ -1,20 +1,29 @@
 import os
 import replicate
+import logging
 from dotenv import load_dotenv
 from fastapi import HTTPException
 
 load_dotenv()
+logger = logging.getLogger(__name__)
 
 class AIService:
     def __init__(self):
         self.api_token = os.getenv("REPLICATE_API_TOKEN")
         if not self.api_token:
+            logger.error("REPLICATE_API_TOKEN not found in environment variables")
             raise ValueError("REPLICATE_API_TOKEN not found in environment variables")
+        logger.info("AIService initialized successfully")
 
     def video_generation_from_text(self, prompt: str) -> str:
         try:
+            logger.info(f"Attempting to generate video for prompt: {prompt}")
+
+            # Initialize Replicate client
             client = replicate.Client(api_token=self.api_token)
-            # Example: AnimateDiff model (change model if you want)
+            logger.info("Replicate client initialized")
+
+            # Run the model
             output = client.run(
                 "lucataco/animate-diff:beecf59c4aee8d81bf04f0381033dfa10dc16e845b4ae00d281e2fa377e48a9f",
                 input={
@@ -24,13 +33,19 @@ class AIService:
                     "num_inference_steps": 20
                 }
             )
-            # Output is usually a list with the video URL as the first item
+
+            logger.info(f"Received output from Replicate: {output}")
+
             if isinstance(output, list) and output:
                 return output[0]
-            else:
-                return output
+            return output
+
+        except replicate.exceptions.ModelError as e:
+            logger.error(f"Model error: {str(e)}")
+            raise HTTPException(status_code=500, detail=f"Model error: {str(e)}")
+        except replicate.exceptions.ReplicateError as e:
+            logger.error(f"Replicate API error: {str(e)}")
+            raise HTTPException(status_code=500, detail=f"Replicate API error: {str(e)}")
         except Exception as e:
-            raise HTTPException(
-                status_code=500,
-                detail=f"Video generation failed: {str(e)}"
-            )
+            logger.error(f"Unexpected error: {str(e)}")
+            raise HTTPException(status_code=500, detail=f"Unexpected error: {str(e)}")
