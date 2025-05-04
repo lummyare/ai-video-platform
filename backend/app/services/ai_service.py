@@ -4,8 +4,10 @@ import logging
 from dotenv import load_dotenv
 from fastapi import HTTPException
 
+# Load environment variables
 load_dotenv()
-print("Loaded Replicate API token:", os.getenv("REPLICATE_API_TOKEN"))
+
+# Set up logging
 logger = logging.getLogger(__name__)
 
 class AIService:
@@ -37,9 +39,13 @@ class AIService:
 
             logger.info(f"Received output from Replicate: {output}")
 
+            # Return the video URL
             if isinstance(output, list) and output:
                 return output[0]
-            return output
+            elif isinstance(output, str):
+                return output
+            else:
+                raise ValueError(f"Unexpected output format from Replicate: {type(output)}")
 
         except replicate.exceptions.ModelError as e:
             logger.error(f"Model error: {str(e)}")
