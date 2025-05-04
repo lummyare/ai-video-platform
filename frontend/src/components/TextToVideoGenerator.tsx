@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { api } from '../lib/api';
+import { api } from '../lib/api';  // Updated import path
 
 interface GenerationForm {
   prompt: string;
