@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 from fastapi import HTTPException
 
 load_dotenv()
+print("Loaded Replicate API token:", os.getenv("REPLICATE_API_TOKEN"))
 logger = logging.getLogger(__name__)
 
 class AIService:
