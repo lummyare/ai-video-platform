@@ -1,5 +1,5 @@
-# Placeholder for AI service integration (e.g., Replicate API)
 class AIService:
     def video_generation_from_text(self, prompt: str) -> str:
-        # Call Replicate or other AI service here
-        return "https://example.com/generated_video.mp4"
+        # This is a placeholder implementation
+        # Replace with actual AI service integration (e.g., Replicate API)
+        return f"https://example.com/generated_video.mp4?prompt={prompt}"
